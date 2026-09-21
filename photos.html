@@ -361,7 +361,8 @@
         <div class="top-bar">
             <div class="top-tools">
                 <!-- Quick Plus Image Upload Button -->
-                <button class="quick-upload-btn" onclick="document.getElementById('imageUpload').click()" title="Upload Image">+</button>
+<button class="quick-upload-btn" onclick="document.getElementById('imageUpload').click()" title="Upload Image">+</button>
+<button class="quick-upload-btn" onclick="openAIPanel()" title="AI Generate" style="background:#8a2be2;">✨</button>
                 <input type="file" id="imageUpload" accept="image/*" style="display:none;">
                 
                 <button class="icon-btn" id="undoBtn" onclick="undo()" title="Undo" disabled>↩️</button>
@@ -1137,6 +1138,56 @@
       if (confirm('Log out?')) await signOut(auth);
     });
   }
+</script>
+<!-- AI Panel -->
+<div id="aiPanel" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:#1e1e1e;border-radius:12px;padding:20px;width:100%;max-width:400px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h3 style="margin:0;color:#8a2be2;letter-spacing:2px;font-size:14px;">✨ AI IMAGE GENERATOR</h3>
+      <button onclick="closeAIPanel()" style="background:none;border:none;color:#888;font-size:22px;cursor:pointer;">✕</button>
+    </div>
+    <input type="text" id="aiPrompt" placeholder="Describe your image..." style="width:100%;padding:12px;background:#121212;border:1px solid #333;border-radius:8px;color:#fff;font-size:13px;outline:none;box-sizing:border-box;margin-bottom:12px;">
+    <button onclick="generateAIImage()" id="aiGenBtn" style="width:100%;padding:12px;background:#8a2be2;color:#fff;border:none;border-radius:8px;font-weight:bold;font-size:13px;letter-spacing:1px;cursor:pointer;">GENERATE</button>
+    <div id="aiStatus" style="text-align:center;color:#888;font-size:12px;margin-top:10px;"></div>
+  </div>
+</div>
+
+<script>
+function openAIPanel() {
+  document.getElementById('aiPanel').style.display = 'flex';
+}
+function closeAIPanel() {
+  document.getElementById('aiPanel').style.display = 'none';
+}
+async function generateAIImage() {
+  const prompt = document.getElementById('aiPrompt').value.trim();
+  const status = document.getElementById('aiStatus');
+  const btn = document.getElementById('aiGenBtn');
+  if (!prompt) { status.textContent = 'Please enter a prompt'; return; }
+  btn.disabled = true;
+  status.textContent = 'Generating... (10-20 sec)';
+  const seed = Math.floor(Math.random() * 1000000);
+  const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=512&height=512&nologo=true&seed=' + seed;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed');
+    const blob = await response.blob();
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      img.onload = function() {
+        imgLoaded = true;
+        closeAIPanel();
+        redraw();
+        status.textContent = '';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(blob);
+  } catch (error) {
+    status.textContent = 'Failed. Try again.';
+    btn.disabled = false;
+  }
+}
 </script>    
 </body>
 </html>
