@@ -339,6 +339,13 @@
 <div id="userBar" style="position:fixed;top:4px;right:4px;z-index:9999;background:rgba(30,30,30,0.85);border:1px solid #333;border-radius:12px;padding:3px 8px;font-size:9px;color:#fff;font-family:sans-serif;line-height:1.2;">
   <span id="userEmail" style="color:#0084ff;font-weight:bold;">—</span>
   <button id="logoutBtn" style="background:none;border:none;color:#ff3b30;font-weight:bold;font-size:9px;cursor:pointer;padding:0 0 0 4px;">✕</button>
+</div>
+<div id="menuBtn" onclick="toggleMenu(event)" style="background:rgba(255,255,255,0.08);border:1px solid #333;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;margin-left:8px;">⋮</div>
+<div id="menuDropdown" style="display:none;position:fixed;top:60px;right:12px;z-index:9999;background:#1e1e1e;border:1px solid #333;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);min-width:180px;flex-direction:column;">
+  <div onclick="location.href='settings.html'" style="padding:14px 18px;color:#fff;font-size:13px;cursor:pointer;border-bottom:1px solid #2a2a2a;">⚙️ Settings</div>
+  <div onclick="location.href='home.html'" style="padding:14px 18px;color:#fff;font-size:13px;cursor:pointer;border-bottom:1px solid #2a2a2a;">🏠 Home</div>
+  <div onclick="alert('MX Studio v1.1')" style="padding:14px 18px;color:#fff;font-size:13px;cursor:pointer;border-bottom:1px solid #2a2a2a;">ℹ️ About</div>
+  <div onclick="document.getElementById('logoutBtn')?.click()" style="padding:14px 18px;color:#ff3b30;font-size:13px;cursor:pointer;">🚪 Logout</div>
 </div>     
 
     <!-- HOME PAGE -->
@@ -1200,6 +1207,18 @@ async function generateAIImage() {
   }
 }
 
+</script>
+<script>
+  function toggleMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('menuDropdown');
+    if (menu) menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+  }
+  function closeMenu() {
+    const menu = document.getElementById('menuDropdown');
+    if (menu) menu.style.display = 'none';
+  }
+  document.addEventListener('click', closeMenu);
 </script>    
 </body>
 </html>

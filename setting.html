@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#121212">
+<title>MX Studio · Settings</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, Roboto, sans-serif; -webkit-tap-highlight-color:transparent; }
+
+  :root {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #ffffff;
+    --text2: #888888;
+    --accent: #0084ff;
+  }
+
+  body.light {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #121212;
+    --text2: #666666;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 {
+    color: var(--accent);
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+
+  .back-btn {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .section h2 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  /* Theme selector */
+  .theme-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .theme-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .theme-btn.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+  }
+
+  .theme-btn .icon {
+    display: block;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  /* Color grid */
+  .colors {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .color-circle {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.2s;
+  }
+
+  .color-circle.active {
+    border-color: var(--text);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+
+  .info {
+    padding: 12px;
+    color: var(--text2);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .info strong { color: var(--text); }
+
+  .save-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: bold;
+    transition: transform 0.3s;
+    z-index: 9999;
+  }
+
+  .save-toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>⚙️ SETTINGS</h1>
+    <button class="back-btn" onclick="window.location.href='home.html'">← Back</button>
+  </div>
+
+  <div class="section">
+    <h2>🌓 Theme</h2>
+    <div class="theme-row">
+      <div class="theme-btn" data-theme="dark" onclick="setTheme('dark', this)">
+        <span class="icon">🌙</span>
+        Dark
+      </div>
+      <div class="theme-btn" data-theme="light" onclick="setTheme('light', this)">
+        <span class="icon">☀️</span>
+        Light
+      </div>
+      <div class="theme-btn" data-theme="system" onclick="setTheme('system', this)">
+        <span class="icon">⚙️</span>
+        System
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🎨 Accent Color</h2>
+    <div class="colors">
+      <div class="color-circle" style="background:#0084ff;" data-color="#0084ff" onclick="setAccent('#0084ff', this)"></div>
+      <div class="color-circle" style="background:#8a2be2;" data-color="#8a2be2" onclick="setAccent('#8a2be2', this)"></div>
+      <div class="color-circle" style="background:#ff00e0;" data-color="#ff00e0" onclick="setAccent('#ff00e0', this)"></div>
+      <div class="color-circle" style="background:#ff3b30;" data-color="#ff3b30" onclick="setAccent('#ff3b30', this)"></div>
+      <div class="color-circle" style="background:#ff9500;" data-color="#ff9500" onclick="setAccent('#ff9500', this)"></div>
+      <div class="color-circle" style="background:#ffcc00;" data-color="#ffcc00" onclick="setAccent('#ffcc00', this)"></div>
+      <div class="color-circle" style="background:#34c759;" data-color="#34c759" onclick="setAccent('#34c759', this)"></div>
+      <div class="color-circle" style="background:#00c7be;" data-color="#00c7be" onclick="setAccent('#00c7be', this)"></div>
+      <div class="color-circle" style="background:#5856d6;" data-color="#5856d6" onclick="setAccent('#5856d6', this)"></div>
+      <div class="color-circle" style="background:#af52de;" data-color="#af52de" onclick="setAccent('#af52de', this)"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>ℹ️ About</h2>
+    <div class="info">
+      <strong>MX Studio</strong><br>
+      Version 1.1<br>
+      Photo & Video Editor<br>
+      Create. Edit. Shine.<br><br>
+      Settings are saved automatically and applied everywhere in the app.
+    </div>
+  </div>
+
+  <div class="save-toast" id="toast">✓ Saved</div>
+
+  <script>
+    // Apply saved settings on load
+    function applySettings() {
+      const theme = localStorage.getItem('mx-theme') || 'dark';
+      const accent = localStorage.getItem('mx-accent') || '#0084ff';
+
+      // Apply theme
+      let isLight = false;
+      if (theme === 'light') isLight = true;
+      if (theme === 'system') {
+        isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      }
+
+      document.body.classList.toggle('light', isLight);
+      document.documentElement.style.setProperty('--accent', accent);
+
+      // Update meta theme-color
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', isLight ? '#f5f5f5' : '#121212');
+
+      // Highlight active buttons
+      document.querySelectorAll('.theme-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.theme === theme);
+      });
+      document.querySelectorAll('.color-circle').forEach(c => {
+        c.classList.toggle('active', c.dataset.color === accent);
+      });
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    function setTheme(theme, el) {
+      localStorage.setItem('mx-theme', theme);
+      applySettings();
+      showToast();
+    }
+
+    function setAccent(color, el) {
+      localStorage.setItem('mx-accent', color);
+      applySettings();
+      showToast();
+    }
+
+    // React to system theme changes
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+      if (localStorage.getItem('mx-theme') === 'system') applySettings();
+    });
+
+    applySettings();
+  </script>
+</body>
+</html>
