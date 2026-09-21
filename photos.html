@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MX Studio · Photos</title>
+    <!-- Expanded list of Google Fonts for deep typography variety -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cinzel:wght@700&family=Courier+Prime:wght@700&family=Dancing+Script:wght@700&family=Fjalla+One&family=Fredericka+the+Great&family=Kanit:wght@700&family=Montserrat:wght@800&family=Nosifer&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Press+Start+2P&family=Raleway:wght@800&family=Righteous&family=Russo+One&family=Special+Elite&family=VT323&family=Aboreto&family=Alfa+Slab+One&family=Bungee&family=Cabin+Sketch:wght@700&family=Chewy&family=Creepster&family=Do+Hyeon&family=East+Sea+Dokdo&family=Finger+Paint&family=Flow+Block&family=Foldit:wght@800&family=FrederickatheGreat&family=Frijole&family=Glass+Antiqua&family=Gloria+Hallelujah&family=Gochi+Hand&family=Gugi&family=Henny+Penny&family=Knewave&family=Luckiest+Guy&family=Monoton&family=Mystery+Quest&family=Orbitron:wght@900&family=Piedra&family=Plaster&family=Press+Start+2P&family=Audiowide&family=Black+Ops+One&family=Bungee+Inline&family=Bungee+Shade&family=Chango&family=Eater&family=Emilys+Candy&family=Fascinate+Inline&family=Astloch:wght@700&family=Bokor&family=Butterfly+Kids&family=Calistoga&family=Carter+One&family=Coiny&family=Covered+By+Your+Grace&family=Croissant+One&family=Damion&family=Diplomata+SC&family=Fruktur&family=Geo&family=Goudy+Bookletter+1911&family=Jolly+Lodger&family=Keania+One&family=Kotta+One&family=Lancelot&family=Life+Savers:wght@800&family=Londrina+Shadow&family=Love+Ya+Like+A+Sister&family=Macondo&family=Maiden+Orange&family=Manuale:wght@800&family=Meie+Script&family=Milonga&family=Modern+Antiqua&family=Mountains+of+Christmas:wght@700&family=Mystery+Quest&family=Niconne&family=Norican&family=Nova+Mono&family=Old+Standard+TT:wght@700&family=OvertheRainbow&family=Paprika&family=Parisienne&family=Petemoss&family=Piedra&family=Pirata+One&family=Prata&family=Qahiri&family=Quintessential&family=Risque&family=Rye&family=Sacramento&family=Sancreek&family=Satisfy&family=Schoolbell&family=Seaweed+Script&family=Shalimar&family=Shrikhand&family=Sirin+Stencil&family=Slackey&family=Smokum&family=Sniglet:wght@800&family=Stalinist+One&family=Stardos+Stencil&family=Stint+Ultra+Condensed&family=Sue+Ellen+Francisco&family=Sunflower:wght@700&family=Sunshiney&family=Supermercado+One&family=Taviraj:wght@900&family=Trade+Winds&family=UnifrakturMaguntia&family=Vampiro+One&family=Vast+Shadow&family=Vibur&family=Voces&family=Wallpoet&family=Warnes&family=Yatra+One&family=Yellowtail&family=Zeyada&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+            touch-action: manipulation;
+        }
+        
+        .view { display: none; }
+        .view.active { display: block; } 
+
+        /* Home Page */
+        .home-container {
+            padding: 15px;
+            text-align: left;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .create-btn {
+            background: #0084ff;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .section-title {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .project-card {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .project-info h4 { margin: 0 0 4px 0; font-size: 15px; color: #fff; }
+        .project-info p { margin: 0; font-size: 11px; color: #888; }
+        
+        .project-actions { display: flex; gap: 6px; }
+        .open-proj-btn { background: #0084ff; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .delete-proj-btn { background: #ff3b30; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; } 
+
+        /* Studio Editor */
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            margin-bottom: 5px;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #333;
+            background: #000;
+            border-radius: 4px;
+            cursor: move;
+        } 
+
+        /* 4-Way Arrow Floating Text Control Menu */
+        #textFloatingMenu {
+            display: none;
+            position: absolute;
+            background: rgba(25, 25, 25, 0.95);
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+            z-index: 50;
+            transform: translate(-50%, -125%);
+            width: 140px;
+        }
+        .arrow-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .arrow-btn {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 6px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .arrow-btn:active { background: #0084ff; }
+        .menu-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        .menu-action-btn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        .menu-action-btn.delete { background: #ff3b30; }
+        .menu-action-btn.center-btn { background: #0084ff; } 
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            gap: 6px;
+        }
+        .top-tools {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        /* Quick Plus Image Upload Button */
+        .quick-upload-btn {
+            background: #0084ff;
+            color: white;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .quick-upload-btn:active { background: #005bb5; }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .icon-btn:disabled { color: #555; cursor: not-allowed; }
+        .top-btn {
+            background: #0084ff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .top-btn.save-gallery { background: #00aa55; } 
+
+        /* Navigation Bar */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: #181818;
+            border-top: 1px solid #333;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 4px 6px;
+        }
+        .nav-btn.active { color: #fff; border-bottom: 2px solid #0084ff; } 
+
+        /* Panels */
+        .panel {
+            display: none;
+            background: #1e1e1e;
+            padding: 12px;
+            margin-bottom: 75px;
+            text-align: left;
+            font-size: 12px;
+            border-top: 1px solid #333;
+            max-height: 190px;
+            overflow-y: auto;
+        }
+        .panel.active { display: block; } 
+
+        .sub-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 6px;
+        }
+        .sub-tab {
+            background: none;
+            border: none;
+            color: #888;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .sub-tab.active { color: #0084ff; border-bottom: 2px solid #0084ff; }
+        .sub-view { display: none; }
+        .sub-view.active { display: block; } 
+
+        .compact-slider-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .compact-slider-group div { background: #252525; padding: 6px 8px; border-radius: 6px; }
+        .compact-slider-group label { margin: 0 0 2px 0; font-size: 10px; color: #ccc; }
+        input[type="range"] { width: 100%; accent-color: #0084ff; height: 4px; } 
+
+        .color-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+            margin-bottom: 8px;
+        }
+        .color-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .color-circle.selected { border-color: #fff; transform: scale(1.1); } 
+
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .font-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .effect-card {
+            background: #282828;
+            border: 2px solid #444;
+            color: #fff;
+            padding: 10px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .effect-card.selected { border-color: #0084ff; background: #1b365d; } 
+
+        input[type="text"] { color: #fff; font-size: 11px; width: 100%; box-sizing: border-box; padding: 6px; background: #252525; border: 1px solid #444; border-radius: 4px; margin-top: 4px;}
+        
+        /* Multiple Text Layer Manager UI */
+        .text-layers-list {
+            max-height: 110px;
+            overflow-y: auto;
+            margin-bottom: 8px;
+        }
+        .text-layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #252525;
+            padding: 6px 8px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            border: 1px solid #444;
+        }
+        .text-layer-item.active {
+            border-color: #0084ff;
+            background: #1b365d;
+        }
+        .add-text-btn {
+            background: #00aa55;
+            color: white;
+            border: none;
+            padding: 8px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<div id="userBar" style="position:fixed;top:4px;right:4px;z-index:9999;background:rgba(30,30,30,0.85);border:1px solid #333;border-radius:12px;padding:3px 8px;font-size:9px;color:#fff;font-family:sans-serif;line-height:1.2;">
+  <span id="userEmail" style="color:#0084ff;font-weight:bold;">—</span>
+  <button id="logoutBtn" style="background:none;border:none;color:#ff3b30;font-weight:bold;font-size:9px;cursor:pointer;padding:0 0 0 4px;">✕</button>
+</div>     
+
+    <!-- HOME PAGE -->
+    <div id="view-home" class="view active">
+        <div class="home-container">
+            <div class="home-header">
+                <div>
+                    <h2 style="margin:0; font-size: 20px;">Music Cover Studio</h2>
+                    <p style="margin:4px 0 0 0; color:#888; font-size:12px;">Manage & Edit Your Cover Arts</p>
+                </div>
+                <button class="create-btn" onclick="startNewProject()">+ New Project</button>
+            </div>
+            <div class="section-title">Your Saved Projects</div>
+            <div id="projects-list"></div>
+        </div>
+    </div> 
+
+    <!-- STUDIO EDITOR -->
+    <div id="view-studio" class="view">
+        <div class="top-bar">
+            <div class="top-tools">
+                <!-- Quick Plus Image Upload Button -->
+                <button class="quick-upload-btn" onclick="document.getElementById('imageUpload').click()" title="Upload Image">+</button>
+                <input type="file" id="imageUpload" accept="image/*" style="display:none;">
+                
+                <button class="icon-btn" id="undoBtn" onclick="undo()" title="Undo" disabled>↩️</button>
+                <button class="icon-btn" id="redoBtn" onclick="redo()" title="Redo" disabled>↪️</button>
+            </div>
+            <div>
+                <button class="top-btn" onclick="saveProjectToHome()">💾 Save</button>
+                <button class="top-btn save-gallery" onclick="saveImage()">📥 Download</button>
+            </div>
+        </div> 
+
+        <div class="canvas-container">
+            <canvas id="canvas" width="400" height="400"></canvas>
+            <!-- 4-Way Arrow Control Menu when Text is Clicked/Tapped -->
+            <div id="textFloatingMenu">
+                <div class="arrow-grid">
+                    <div></div>
+                    <button class="arrow-btn" onclick="moveActiveText(0, -5)">⬆️</button>
+                    <div></div>
+                    <button class="arrow-btn" onclick="moveActiveText(-5, 0)">⬅️</button>
+                    <button class="arrow-btn" onclick="centerActiveTextHoriz()" title="Center">⏺️</button>
+                    <button class="arrow-btn" onclick="moveActiveText(5, 0)">➡️</button>
+                    <div></div>
+                    <button class="arrow-btn" onclick="moveActiveText(0, 5)">⬇️</button>
+                    <div></div>
+                </div>
+                <div class="menu-actions">
+                    <button class="menu-action-btn center-btn" onclick="centerActiveTextHoriz()">Center</button>
+                    <button class="menu-action-btn delete" onclick="deleteActiveTextLayer()">Delete</button>
+                </div>
+            </div>
+        </div> 
+
+        <!-- 1. ADJUST PANEL -->
+        <div id="panel-adjust" class="panel active">
+            <div class="compact-slider-group">
+                <div><label>Bright: <span id="bVal">100</span>%</label><input type="range" id="brightness" min="0" max="200" value="100"></div>
+                <div><label>Contrast: <span id="cVal">100</span>%</label><input type="range" id="contrast" min="50" max="200" value="100"></div>
+                <div><label>Saturation: <span id="sVal">100</span>%</label><input type="range" id="saturation" min="0" max="200" value="100"></div>
+                <div><label>Soft Fade: <span id="nVal">0</span>%</label><input type="range" id="noise" min="0" max="100" value="0"></div>
+            </div>
+        </div> 
+
+        <!-- 2. FILTERS PANEL -->
+        <div id="panel-filters" class="panel">
+            <div class="effects-grid">
+                <div class="effect-card selected" onclick="setFilter('none', this)">Normal</div>
+                <div class="effect-card" onclick="setFilter('grayscale(100%) contrast(140%)', this)">Dark Mono</div>
+                <div class="effect-card" onclick="setFilter('sepia(80%) contrast(130%)', this)">Vintage</div>
+                <div class="effect-card" onclick="setFilter('invert(15%) hue-rotate(180deg)', this)">Cyber Blue</div>
+            </div>
+        </div> 
+
+        <!-- 3. TEXT PANEL -->
+        <div id="panel-text" class="panel">
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchSubTab('layers', this)">LAYERS</button>
+                <button class="sub-tab" onclick="switchSubTab('font', this)">FONTS</button>
+                <button class="sub-tab" onclick="switchSubTab('basic', this)">STYLE</button>
+                <button class="sub-tab" onclick="switchSubTab('featured', this)">EFFECTS</button>
+            </div> 
+
+            <div id="subtab-layers" class="sub-view active">
+                <label style="margin:0 0 2px 0;">Active Text Layer:</label>
+                <input type="text" id="textContent" placeholder="Enter text..." oninput="updateActiveTextContent(this.value)">
+                <div style="margin-top:6px; font-size:10px; color:#aaa;">Layers:</div>
+                <div id="textLayersList" class="text-layers-list"></div>
+                <button class="add-text-btn" onclick="addNewTextLayer()">+ Add Text</button>
+            </div>
+
+            <div id="subtab-font" class="sub-view">
+                <label style="margin:0 0 2px 0;">Select Font Style (100 Options):</label>
+                <div class="font-grid" style="margin-top:4px;" id="fontGridContainer">
+                    <!-- Populated dynamically with 100 fonts -->
+                </div>
+            </div> 
+
+            <div id="subtab-basic" class="sub-view">
+                <label style="margin:0 0 2px 0;">Text Color:</label>
+                <div class="color-row">
+                    <div class="color-circle" style="background:#ffffff;" onclick="setActiveTextColor('#ffffff', this)"></div>
+                    <div class="color-circle" style="background:#000000;" onclick="setActiveTextColor('#000000', this)"></div>
+                    <div class="color-circle" style="background:#ff3b30;" onclick="setActiveTextColor('#ff3b30', this)"></div>
+                    <div class="color-circle" style="background:#ff9500;" onclick="setActiveTextColor('#ff9500', this)"></div>
+                    <div class="color-circle" style="background:#ffcc00;" onclick="setActiveTextColor('#ffcc00', this)"></div>
+                    <div class="color-circle" style="background:#34c759;" onclick="setActiveTextColor('#34c759', this)"></div>
+                    <div class="color-circle" style="background:#00c7be;" onclick="setActiveTextColor('#00c7be', this)"></div>
+                    <div class="color-circle" style="background:#0084ff;" onclick="setActiveTextColor('#0084ff', this)"></div>
+                    <div class="color-circle" style="background:#af52de;" onclick="setActiveTextColor('#af52de', this)"></div>
+                </div>
+                <label style="margin-top:6px;">Font Size: <span id="fSizeVal">36</span>px</label>
+                <input type="range" id="fontSize" min="16" max="96" value="36" oninput="setActiveFontSize(this.value)">
+            </div> 
+
+            <div id="subtab-featured" class="sub-view">
+                <div class="effects-grid">
+                    <div class="effect-card" onclick="setActiveTextStyle('normal', this)">Standard</div>
+                    <div class="effect-card" onclick="setActiveTextStyle('stroke', this)">Bold Outline</div>
+                    <div class="effect-card" onclick="setActiveTextStyle('shadow', this)">Drop Shadow</div>
+                </div>
+            </div>
+        </div> 
+
+        <!-- 4. FX / LIGHT LEAK PANEL -->
+        <div id="panel-effects" class="panel">
+            <div style="font-size:10px; color:#aaa; margin-bottom:4px;">Background Lighting & Effects:</div>
+            <div class="effects-grid">
+                <div class="effect-card selected" onclick="setEffect('none', this)">None</div>
+                <div class="effect-card" onclick="setEffect('warm', this)">🔥 Warm Leak</div>
+                <div class="effect-card" onclick="setEffect('cyber', this)">⚡ Cyber Neon</div>
+                <div class="effect-card" onclick="setEffect('emerald', this)">💎 Emerald</div>
+                <div class="effect-card" onclick="setEffect('purple', this)">🔮 Velvet</div>
+                <div class="effect-card" onclick="setEffect('vignette', this)">🌑 Vignette</div>
+                <div class="effect-card" onclick="setEffect('glitch', this)">📺 Scanlines</div>
+                <div class="effect-card" onclick="setEffect('stars', this)">✨ Dust/Stars</div>
+                <div class="effect-card" onclick="setEffect('bokeh', this)">🫧 Bokeh</div>
+            </div>
+            <label style="margin-top:8px;">Effect Intensity: <span id="eVal">70</span>%</label>
+            <input type="range" id="effectOpacity" min="0" max="100" value="70">
+        </div> 
+
+        <!-- BOTTOM NAV -->
+        <div class="bottom-nav">
+            <button class="nav-btn" onclick="goHome()">🏠 Home</button>
+            <button class="nav-btn active" onclick="switchPanel('adjust')">⚙️ Adjust</button>
+            <button class="nav-btn" onclick="switchPanel('filters')">🎨 Filters</button>
+            <button class="nav-btn" onclick="switchPanel('text')">✍️ Text</button>
+            <button class="nav-btn" onclick="switchPanel('effects')">💥 FX</button>
+        </div>
+    </div> 
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const upload = document.getElementById('imageUpload');
+        const textMenu = document.getElementById('textFloatingMenu'); 
+
+        let img = new Image();
+        let imgLoaded = false;
+        let currentFilter = 'none';
+        let currentEffect = 'none';
+        let currentProjectId = null;
+
+        // 100 Comprehensive Font Families list matching Google Fonts loaded
+        const fontList = [
+            "Impact", "Bebas Neue", "Oswald", "Montserrat", "Anton", "Cinzel", "Pacifico", "Dancing Script", 
+            "Permanent Marker", "Russo One", "Kanit", "Fjalla One", "Courier Prime", "VT323", "Nosifer", 
+            "Press Start 2P", "Righteous", "Special Elite", "Raleway", "Fredericka the Great",
+            "Aboreto", "Alfa Slab One", "Bungee", "Cabin Sketch", "Chewy", "Creepster", "Do Hyeon", 
+            "East Sea Dokdo", "Finger Paint", "Flow Block", "Foldit", "Frijole", "Glass Antiqua", 
+            "Gloria Hallelujah", "Gochi Hand", "Gugi", "Henny Penny", "Knewave", "Luckiest Guy", 
+            "Monoton", "Mystery Quest", "Orbitron", "Piedra", "Plaster", "Audiowide", "Black Ops One", 
+            "Bungee Inline", "Bungee Shade", "Chango", "Eater", "Emilys Candy", "Fascinate Inline", 
+            "Astloch", "Bokor", "Butterfly Kids", "Calistoga", "Carter One", "Coiny", "Covered By Your Grace", 
+            "Croissant One", "Damion", "Diplomata SC", "Fruktur", "Geo", "Goudy Bookletter 1911", 
+            "Jolly Lodger", "Keania One", "Kotta One", "Lancelot", "Life Savers", "Londrina Shadow", 
+            "Love Ya Like A Sister", "Macondo", "Maiden Orange", "Manuale", "Meie Script", "Milonga", 
+            "Modern Antiqua", "Mountains of Christmas", "Niconne", "Norican", "Nova Mono", "Old Standard TT", 
+            "OvertheRainbow", "Paprika", "Parisienne", "Petemoss", "Pirata One", "Prata", "Qahiri", 
+            "Quintessential", "Risque", "Rye", "Sacramento", "Sancreek", "Satisfy", "Schoolbell", 
+            "Seaweed Script", "Shalimar", "Shrikhand", "Sirin Stencil"
+        ];
+
+        let textLayers = [
+            { id: 1, text: "MUSIC ALBUM", x: 200, y: 200, font: "Impact", size: 36, color: "#ffffff", style: "normal" }
+        ];
+        let activeLayerId = 1;
+
+        let fxX = 200;
+        let fxY = 200; 
+        let isDraggingText = false;
+        let isDraggingFx = false; 
+        let undoStack = [];
+        let redoStack = []; 
+
+        const bInput = document.getElementById('brightness');
+        const cInput = document.getElementById('contrast');
+        const sInput = document.getElementById('saturation');
+        const nInput = document.getElementById('noise');
+        const eInput = document.getElementById('effectOpacity');
+        const tInput = document.getElementById('textContent');
+        const sizeInput = document.getElementById('fontSize'); 
+
+        window.onload = function() { 
+            buildFontGrid();
+            renderProjectsList(); 
+            updateTextLayersUI();
+        } 
+
+        function buildFontGrid() {
+            let gridContainer = document.getElementById('fontGridContainer');
+            let html = '';
+            fontList.forEach(fontName => {
+                let activeClass = (fontName === 'Impact') ? 'selected' : '';
+                html += `<div class="effect-card ${activeClass}" style="font-family:'${fontName}'" onclick="setActiveFont('${fontName}', this)">${fontName}</div>`;
+            });
+            gridContainer.innerHTML = html;
+        }
+
+        function goHome() {
+            document.getElementById('view-studio').classList.remove('active');
+            document.getElementById('view-home').classList.add('active');
+            textMenu.style.display = 'none';
+            renderProjectsList();
+        } 
+
+        function startNewProject() {
+            currentProjectId = 'proj_' + Date.now();
+            imgLoaded = false;
+            currentFilter = 'none';
+            currentEffect = 'none';
+            bInput.value = 100; cInput.value = 100; sInput.value = 100; nInput.value = 0; eInput.value = 70;
+            
+            textLayers = [
+                { id: Date.now(), text: "MUSIC ALBUM", x: 200, y: 200, font: "Impact", size: 36, color: "#ffffff", style: "normal" }
+            ];
+            activeLayerId = textLayers[0].id;
+            syncActiveInputs();
+            updateTextLayersUI();
+
+            fxX = 200; fxY = 200;
+            undoStack = []; redoStack = []; updateHistoryButtons();
+            textMenu.style.display = 'none';
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('view-home').classList.remove('active');
+            document.getElementById('view-studio').classList.add('active');
+        } 
+
+        function renderProjectsList() {
+            let listContainer = document.getElementById('projects-list');
+            let keys = Object.keys(localStorage).filter(k => k.startsWith('music_proj_'));
+            
+            if (keys.length === 0) {
+                listContainer.innerHTML = `<div class="project-card"><div class="project-info"><h4>No Saved Projects</h4><p>Tap '+ New Project' to get started</p></div></div>`;
+                return;
+            } 
+
+            let html = '';
+            keys.sort().reverse().forEach(key => {
+                let projData = JSON.parse(localStorage.getItem(key));
+                html += `
+                    <div class="project-card">
+                        <div class="project-info">
+                            <h4>${projData.name}</h4>
+                            <p>Saved: ${projData.date}</p>
+                        </div>
+                        <div class="project-actions">
+                            <button class="open-proj-btn" onclick="loadProject('${key}')">Open</button>
+                            <button class="delete-proj-btn" onclick="deleteProject('${key}')">🗑️</button>
+                        </div>
+                    </div>`;
+            });
+            listContainer.innerHTML = html;
+        } 
+
+        function loadProject(key) {
+            let projData = JSON.parse(localStorage.getItem(key));
+            currentProjectId = key.replace('music_', '');
+            
+            if (projData.textLayers) {
+                textLayers = projData.textLayers;
+                if (textLayers.length > 0) activeLayerId = textLayers[0].id;
+            }
+            syncActiveInputs();
+            updateTextLayersUI();
+
+            img.onload = function() { imgLoaded = true; saveState(); redraw(); }
+            img.src = projData.image;
+            document.getElementById('view-home').classList.remove('active');
+            document.getElementById('view-studio').classList.add('active');
+        } 
+
+        function deleteProject(key) {
+            if (confirm("Delete this saved project?")) {
+                localStorage.removeItem(key);
+                renderProjectsList();
+            }
+        } 
+
+        upload.addEventListener('change', function(e) {
+            if (!e.target.files || e.target.files.length === 0) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                img.onload = function() {
+                    canvas.width = 400;
+                    canvas.height = 400;
+                    fxX = 200; fxY = 200;
+                    imgLoaded = true;
+                    undoStack = []; redoStack = [];
+                    textMenu.style.display = 'none';
+                    saveState();
+                    redraw();
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }); 
+
+        function saveState() {
+            if (!imgLoaded) return;
+            let currentState = canvas.toDataURL();
+            if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== currentState) {
+                undoStack.push(currentState);
+                if (undoStack.length > 15) undoStack.shift();
+                redoStack = [];
+                updateHistoryButtons();
+            }
+        } 
+
+        function undo() {
+            if (undoStack.length > 1) {
+                let currentState = undoStack.pop();
+                redoStack.push(currentState);
+                let prevState = undoStack[undoStack.length - 1];
+                let tempImg = new Image();
+                tempImg.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(tempImg, 0, 0);
+                    updateHistoryButtons();
+                }
+                tempImg.src = prevState;
+            }
+        } 
+
+        function redo() {
+            if (redoStack.length > 0) {
+                let nextState = redoStack.pop();
+                undoStack.push(nextState);
+                let tempImg = new Image();
+                tempImg.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(tempImg, 0, 0);
+                    updateHistoryButtons();
+                }
+                tempImg.src = nextState;
+            }
+        } 
+
+        function updateHistoryButtons() {
+            document.getElementById('undoBtn').disabled = undoStack.length <= 1;
+            document.getElementById('redoBtn').disabled = redoStack.length === 0;
+        } 
+
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        } 
+
+        canvas.addEventListener('mousedown', startTouch);
+        canvas.addEventListener('touchstart', startTouch, {passive: true});
+        canvas.addEventListener('mousemove', onTouchMove);
+        canvas.addEventListener('touchmove', onTouchMove, {passive: true});
+        canvas.addEventListener('mouseup', endTouch);
+        canvas.addEventListener('touchend', endTouch); 
+
+        function startTouch(e) {
+            if (!imgLoaded) return;
+            const pos = getCanvasCoordinates(e);
+            
+            let clickedLayer = null;
+            for (let layer of textLayers) {
+                ctx.font = `bold ${layer.size}px '${layer.font}', sans-serif`;
+                let metrics = ctx.measureText(layer.text);
+                let tWidth = metrics.width;
+                let tHeight = parseInt(layer.size); 
+
+                if (pos.x >= layer.x - tWidth/2 - 20 && pos.x <= layer.x + tWidth/2 + 20 &&
+                    pos.y >= layer.y - tHeight && pos.y <= layer.y + 15) {
+                    clickedLayer = layer;
+                    break;
+                }
+            }
+
+            if (clickedLayer) {
+                activeLayerId = clickedLayer.id;
+                syncActiveInputs();
+                updateTextLayersUI();
+                isDraggingText = true;
+                showFloatingMenu(clickedLayer.x, clickedLayer.y);
+            } else {
+                textMenu.style.display = 'none'; 
+                isDraggingFx = true;
+                fxX = pos.x;
+                fxY = pos.y;
+                redraw();
+            }
+        } 
+
+        function onTouchMove(e) {
+            if (!imgLoaded) return;
+            const pos = getCanvasCoordinates(e);
+            if (isDraggingText) {
+                let layer = textLayers.find(l => l.id === activeLayerId);
+                if (layer) {
+                    layer.x = pos.x;
+                    layer.y = pos.y;
+                    showFloatingMenu(layer.x, layer.y);
+                    redraw();
+                }
+            } else if (isDraggingFx) {
+                fxX = pos.x;
+                fxY = pos.y;
+                redraw();
+            }
+        } 
+
+        function endTouch() {
+            if (isDraggingText || isDraggingFx) {
+                isDraggingText = false;
+                isDraggingFx = false;
+                saveState();
+            }
+        } 
+
+        function showFloatingMenu(x, y) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height; 
+
+            textMenu.style.left = (x * scaleX) + 'px';
+            textMenu.style.top = ((y * scaleY) - 30) + 'px';
+            textMenu.style.display = 'block';
+        } 
+
+        function moveActiveText(dx, dy) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.x += dx;
+                layer.y += dy;
+                showFloatingMenu(layer.x, layer.y);
+                redraw();
+                saveState();
+            }
+        } 
+
+        function centerActiveTextHoriz() {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.x = canvas.width / 2;
+                showFloatingMenu(layer.x, layer.y);
+                redraw();
+                saveState();
+            }
+        } 
+
+        function addNewTextLayer() {
+            let newId = Date.now();
+            let newLayer = {
+                id: newId,
+                text: "NEW TEXT",
+                x: 200,
+                y: 250,
+                font: "Impact",
+                size: 32,
+                color: "#ffffff",
+                style: "normal"
+            };
+            textLayers.push(newLayer);
+            activeLayerId = newId;
+            syncActiveInputs();
+            updateTextLayersUI();
+            showFloatingMenu(newLayer.x, newLayer.y);
+            redraw();
+            saveState();
+        }
+
+        function deleteActiveTextLayer() {
+            if (textLayers.length <= 1) {
+                let layer = textLayers.find(l => l.id === activeLayerId);
+                if (layer) layer.text = '';
+            } else {
+                textLayers = textLayers.filter(l => l.id !== activeLayerId);
+                activeLayerId = textLayers[0].id;
+            }
+            textMenu.style.display = 'none';
+            syncActiveInputs();
+            updateTextLayersUI();
+            redraw();
+            saveState();
+        }
+
+        function selectLayer(id) {
+            activeLayerId = id;
+            syncActiveInputs();
+            updateTextLayersUI();
+            let layer = textLayers.find(l => l.id === id);
+            if (layer) {
+                showFloatingMenu(layer.x, layer.y);
+            }
+        }
+
+        function updateTextLayersUI() {
+            let listEl = document.getElementById('textLayersList');
+            if (!listEl) return;
+            let html = '';
+            textLayers.forEach(l => {
+                let isActive = l.id === activeLayerId ? 'active' : '';
+                html += `
+                    <div class="text-layer-item ${isActive}" onclick="selectLayer(${l.id})">
+                        <span style="font-weight:bold; font-size:11px;">${l.text || '(Empty)'}</span>
+                        <span style="font-size:10px; color:#aaa;">${l.font}</span>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function syncActiveInputs() {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (!layer) return;
+            tInput.value = layer.text;
+            sizeInput.value = layer.size;
+            document.getElementById('fSizeVal').innerText = layer.size;
+        }
+
+        function updateActiveTextContent(val) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.text = val;
+                updateTextLayersUI();
+                redraw();
+                saveState();
+            }
+        }
+
+        function setActiveFontSize(val) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.size = parseInt(val);
+                document.getElementById('fSizeVal').innerText = val;
+                redraw();
+                saveState();
+            }
+        }
+
+        function setActiveFont(fontName, el) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.font = fontName;
+                updateSelection(el);
+                redraw();
+                saveState();
+            }
+        }
+
+        function setActiveTextColor(hex, el) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.color = hex;
+                updateSelection(el);
+                redraw();
+                saveState();
+            }
+        }
+
+        function setActiveTextStyle(style, el) {
+            let layer = textLayers.find(l => l.id === activeLayerId);
+            if (layer) {
+                layer.style = style;
+                updateSelection(el);
+                redraw();
+                saveState();
+            }
+        }
+
+        function saveProjectToHome() {
+            if (!imgLoaded) { alert("Upload an image first!"); return; }
+            if (!currentProjectId) currentProjectId = 'proj_' + Date.now();
+            let projName = prompt("Project Name:", "Cover Art " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            if (!projName) return; 
+
+            let projInfo = { 
+                name: projName, 
+                date: new Date().toLocaleDateString(), 
+                image: canvas.toDataURL('image/png'),
+                textLayers: textLayers
+            };
+            localStorage.setItem('music_' + currentProjectId, JSON.stringify(projInfo));
+            alert("Project saved successfully!");
+            goHome();
+        } 
+
+        function switchPanel(name) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            event.currentTarget.classList.add('active');
+        } 
+
+        function switchSubTab(name, el) {
+            document.querySelectorAll('.sub-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('subtab-' + name).classList.add('active');
+            el.classList.add('active');
+        } 
+
+        function setFilter(code, el) { currentFilter = code; updateSelection(el); saveState(); redraw(); }
+        function setEffect(name, el) { currentEffect = name; updateSelection(el); saveState(); redraw(); }
+
+        function updateSelection(el) {
+            let parent = el.parentElement;
+            parent.querySelectorAll('.effect-card, .color-circle').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        } 
+
+        function saveImage() {
+            if (!imgLoaded) { alert("No image to download!"); return; }
+            let link = document.createElement('a');
+            link.download = 'music-cover.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } 
+
+        [bInput, cInput, sInput, nInput, eInput].forEach(input => {
+            input.addEventListener('input', () => {
+                document.getElementById('bVal').innerText = bInput.value;
+                document.getElementById('cVal').innerText = cInput.value;
+                document.getElementById('sVal').innerText = sInput.value;
+                document.getElementById('nVal').innerText = nInput.value;
+                document.getElementById('eVal').innerText = eInput.value;
+                redraw();
+            });
+            input.addEventListener('change', () => { saveState(); });
+        }); 
+
+        function redraw() {
+            if (!imgLoaded) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+            let filterString = `brightness(${bInput.value}%) contrast(${cInput.value}%) saturate(${sInput.value}%) `;
+            if (currentFilter !== 'none') filterString += currentFilter;
+            ctx.filter = filterString;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.filter = 'none'; 
+
+            let fadeVal = parseInt(nInput.value);
+            if (fadeVal > 0) {
+                ctx.save();
+                ctx.fillStyle = `rgba(0, 0, 0, ${(fadeVal / 100) * 0.4})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } 
+
+            let alpha = eInput.value / 100;
+            if (currentEffect === 'warm') {
+                ctx.save();
+                let grad = ctx.createRadialGradient(fxX, fxY, 10, fxX, fxY, canvas.width * 0.7);
+                grad.addColorStop(0, `rgba(255, 90, 0, ${alpha})`);
+                grad.addColorStop(0.5, `rgba(255, 30, 0, ${alpha * 0.5})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (currentEffect === 'cyber') {
+                ctx.save();
+                let grad = ctx.createRadialGradient(fxX, fxY, 10, fxX, fxY, canvas.width * 0.7);
+                grad.addColorStop(0, `rgba(0, 220, 255, ${alpha})`);
+                grad.addColorStop(0.5, `rgba(100, 0, 255, ${alpha * 0.5})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (currentEffect === 'emerald') {
+                ctx.save();
+                let grad = ctx.createRadialGradient(fxX, fxY, 10, fxX, fxY, canvas.width * 0.7);
+                grad.addColorStop(0, `rgba(0, 255, 150, ${alpha})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (currentEffect === 'purple') {
+                ctx.save();
+                let grad = ctx.createRadialGradient(fxX, fxY, 10, fxX, fxY, canvas.width * 0.7);
+                grad.addColorStop(0, `rgba(200, 50, 255, ${alpha})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (currentEffect === 'vignette') {
+                ctx.save();
+                let gradient = ctx.createRadialGradient(fxX, fxY, 40, fxX, fxY, canvas.width);
+                gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                gradient.addColorStop(1, `rgba(0,0,0,${alpha})`);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else if (currentEffect === 'glitch') {
+                ctx.save();
+                ctx.fillStyle = `rgba(0, 255, 255, ${alpha * 0.15})`;
+                for (let i = 0; i < canvas.height; i += 4) {
+                    ctx.fillRect(0, i, canvas.width, 1);
+                }
+                ctx.restore();
+            } else if (currentEffect === 'stars') {
+                ctx.save();
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                for (let i = 0; i < 40; i++) {
+                    let sx = (i * 37) % canvas.width;
+                    let sy = (i * 73) % canvas.height;
+                    ctx.fillRect(sx, sy, 2, 2);
+                }
+                ctx.restore();
+            } else if (currentEffect === 'bokeh') {
+                ctx.save();
+                ctx.fillStyle = `rgba(255, 220, 150, ${alpha * 0.4})`;
+                ctx.beginPath();
+                ctx.arc(fxX - 40, fxY - 30, 25, 0, Math.PI * 2);
+                ctx.arc(fxX + 50, fxY + 40, 35, 0, Math.PI * 2);
+                ctx.arc(fxX - 20, fxY + 60, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            textLayers.forEach(layer => {
+                if (layer.text && layer.text.trim() !== '') {
+                    ctx.save();
+                    ctx.font = `bold ${layer.size}px '${layer.font}', sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle'; 
+
+                    if (layer.style === 'stroke') {
+                        ctx.lineWidth = 4;
+                        ctx.strokeStyle = '#000000';
+                        ctx.strokeText(layer.text, layer.x, layer.y);
+                    } else if (layer.style === 'shadow') {
+                        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                        ctx.shadowBlur = 12;
+                        ctx.shadowOffsetX = 4;
+                        ctx.shadowOffsetY = 4;
+                    } 
+
+                    ctx.fillStyle = layer.color;
+                    ctx.fillText(layer.text, layer.x, layer.y);
+                    ctx.restore();
+                }
+            });
+        }
+    </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDePIkNn3MJZX16_BKh1HaAlhW2g6m1E4c",
+    authDomain: "sd-music-c3b70.firebaseapp.com",
+    projectId: "sd-music-c3b70",
+    storageBucket: "sd-music-c3b70.firebasestorage.app",
+    messagingSenderId: "1030569992708",
+    appId: "1:1030569992708:web:0f83f8db17392cfe3d8b51"
+  };
+
+  const auth = getAuth(initializeApp(firebaseConfig));
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      const el = document.getElementById('userEmail');
+      if (el) el.textContent = user.email.split('@')[0].toUpperCase();
+    }
+  });
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      if (confirm('Log out?')) await signOut(auth);
+    });
+  }
+</script>    
+</body>
+</html>

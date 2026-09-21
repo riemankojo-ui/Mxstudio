@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#121212">
+<title>MX Studio</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    background:#121212;
+    color:#fff;
+    font-family:-apple-system, Roboto, sans-serif;
+    min-height:100vh;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .top-bar {
+    position:fixed;
+    top:0; left:0; right:0;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(18,18,18,0.9);
+    border-bottom:1px solid #1a1a1a;
+    z-index:10;
+  }
+
+  .logo {
+    color:#0084ff;
+    font-size:16px;
+    letter-spacing:3px;
+    font-weight:700;
+  }
+
+  .user-info {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11px;
+  }
+
+  .user-email {
+    color:#0084ff;
+    font-weight:bold;
+  }
+
+  .logout-btn {
+    background:none;
+    border:1px solid #ff3b30;
+    color:#ff3b30;
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:10px;
+    font-weight:bold;
+    cursor:pointer;
+    letter-spacing:1px;
+  }
+
+  h1 {
+    font-size:32px;
+    letter-spacing:6px;
+    color:#fff;
+    margin-bottom:6px;
+    font-weight:300;
+    text-align:center;
+  }
+
+  .subtitle {
+    color:#555;
+    font-size:11px;
+    letter-spacing:4px;
+    margin-bottom:40px;
+    text-align:center;
+  }
+
+  .apps {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+    width:100%;
+    max-width:340px;
+  }
+
+  .app-card {
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:#1a1a1a;
+    border:2px solid #2a2a2a;
+    border-radius:16px;
+    padding:22px 20px;
+    cursor:pointer;
+    transition:all 0.15s;
+    text-decoration:none;
+    color:#fff;
+    text-align:left;
+  }
+
+  .app-card:active {
+    transform:scale(0.97);
+    border-color:#0084ff;
+  }
+
+  .app-card.photos {
+    background:linear-gradient(135deg, #1a2540, #1a1a1a);
+    border-color:#0084ff33;
+  }
+
+  .app-card.photos:active { border-color:#0084ff; }
+
+  .app-card.videos {
+    background:linear-gradient(135deg, #401a2a, #1a1a1a);
+    border-color:#ff3b3033;
+  }
+
+  .app-card.videos:active { border-color:#ff3b30; }
+
+  .app-icon {
+    font-size:38px;
+    flex-shrink:0;
+  }
+
+  .app-info h2 {
+    font-size:16px;
+    letter-spacing:2px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+
+  .app-card.photos .app-info h2 { color:#0084ff; }
+  .app-card.videos .app-info h2 { color:#ff6b6b; }
+
+  .app-info p {
+    font-size:11px;
+    color:#777;
+    letter-spacing:0.5px;
+  }
+
+  .footer {
+    position:fixed;
+    bottom:20px;
+    font-size:10px;
+    color:#333;
+    letter-spacing:3px;
+    text-align:center;
+    width:100%;
+  }
+</style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="logo">MX STUDIO</div>
+    <div class="user-info">
+      <span class="user-email" id="userEmail">—</span>
+      <button class="logout-btn" id="logoutBtn">LOGOUT</button>
+    </div>
+  </div>
+
+  <h1>MX STUDIO</h1>
+  <p class="subtitle">CREATE · EDIT · SHINE</p>
+
+  <div class="apps">
+    <a href="photos.html" class="app-card photos">
+      <div class="app-icon">📸</div>
+      <div class="app-info">
+        <h2>PHOTOS</h2>
+        <p>Edit, filter, and design photos</p>
+      </div>
+    </a>
+
+    <a href="videos.html" class="app-card videos">
+      <div class="app-icon">🎬</div>
+      <div class="app-info">
+        <h2>VIDEOS</h2>
+        <p>Trim, filter, and export clips</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">V1.0 · MX STUDIO</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDePIkNn3MJZX16_BKh1HaAlhW2g6m1E4c",
+      authDomain: "sd-music-c3b70.firebaseapp.com",
+      projectId: "sd-music-c3b70",
+      storageBucket: "sd-music-c3b70.firebasestorage.app",
+      messagingSenderId: "1030569992708",
+      appId: "1:1030569992708:web:0f83f8db17392cfe3d8b51"
+    };
+
+    const auth = getAuth(initializeApp(firebaseConfig));
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+      } else {
+        document.getElementById('userEmail').textContent =
+          user.email.split('@')[0].toUpperCase();
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      if (confirm('Log out?')) await signOut(auth);
+    });
+  </script>
+</body>
+</html>

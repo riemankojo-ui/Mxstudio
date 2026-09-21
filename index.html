@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MX Studio · Login</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, Roboto, sans-serif; }
+  body { background:#121212; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .card { width:100%; max-width:340px; background:#1e1e1e; border:1px solid #333; border-radius:12px; padding:28px 22px; }
+  .logo { color:#0084ff; font-size:18px; font-weight:bold; letter-spacing:3px; text-align:center; margin-bottom:4px; }
+  .sub { color:#666; font-size:11px; letter-spacing:3px; text-align:center; margin-bottom:22px; }
+  .err { display:none; background:#2a0a0a; color:#ff6b6b; padding:10px; border-radius:6px; font-size:12px; margin-bottom:14px; text-align:center; }
+  label { display:block; color:#888; font-size:10px; letter-spacing:2px; margin-bottom:6px; }
+  input { width:100%; padding:12px; background:#121212; border:1px solid #333; border-radius:8px; color:#fff; font-size:14px; outline:none; margin-bottom:14px; }
+  .btn { width:100%; padding:14px; background:#0084ff; color:#fff; border:none; border-radius:8px; font-size:13px; letter-spacing:3px; font-weight:bold; cursor:pointer; }
+  .btn:disabled { opacity:0.5; }
+  .switch { text-align:center; margin-top:16px; font-size:12px; color:#666; }
+  .switch a { color:#0084ff; text-decoration:none; font-weight:bold; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">MX STUDIO</div>
+    <div class="sub" id="subtitle">LOGIN</div>
+    <div class="err" id="error"></div>
+    <label>EMAIL</label>
+    <input type="email" id="email" placeholder="you@example.com">
+    <label>PASSWORD</label>
+    <input type="password" id="password" placeholder="••••••••">
+    <div id="confirmWrap" style="display:none;">
+      <label>CONFIRM PASSWORD</label>
+      <input type="password" id="confirm" placeholder="••••••••">
+    </div>
+    <button class="btn" id="submit">LOGIN</button>
+    <div class="switch"><span id="switchText">No account?</span> <a href="#" id="switchLink">Sign up</a></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDePIkNn3MJZX16_BKh1HaAlhW2g6m1E4c",
+      authDomain: "sd-music-c3b70.firebaseapp.com",
+      projectId: "sd-music-c3b70",
+      storageBucket: "sd-music-c3b70.firebasestorage.app",
+      messagingSenderId: "1030569992708",
+      appId: "1:1030569992708:web:0f83f8db17392cfe3d8b51"
+    };
+    const auth = getAuth(initializeApp(firebaseConfig));
+
+    const emailEl = document.getElementById('email');
+    const passEl = document.getElementById('password');
+    const confirmEl = document.getElementById('confirm');
+    const confirmWrap = document.getElementById('confirmWrap');
+    const submitBtn = document.getElementById('submit');
+    const errEl = document.getElementById('error');
+    const subtitle = document.getElementById('subtitle');
+    const switchText = document.getElementById('switchText');
+    const switchLink = document.getElementById('switchLink');
+    let mode = 'login';
+
+    function setMode(m) {
+      mode = m;
+      errEl.style.display = 'none';
+      if (m === 'login') {
+        subtitle.textContent = 'LOGIN';
+        submitBtn.textContent = 'LOGIN';
+        switchText.textContent = 'No account?';
+        switchLink.textContent = 'Sign up';
+        confirmWrap.style.display = 'none';
+      } else {
+        subtitle.textContent = 'CREATE ACCOUNT';
+        submitBtn.textContent = 'SIGN UP';
+        switchText.textContent = 'Already have an account?';
+        switchLink.textContent = 'Login';
+        confirmWrap.style.display = 'block';
+      }
+    }
+    switchLink.addEventListener('click', (e) => { e.preventDefault(); setMode(mode === 'login' ? 'signup' : 'login'); });
+    function showError(m) { errEl.textContent = m; errEl.style.display = 'block'; }
+
+    submitBtn.addEventListener('click', async () => {
+      const email = emailEl.value.trim();
+      const password = passEl.value;
+      errEl.style.display = 'none';
+      if (!email || !password) return showError('Please fill in all fields.');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'PLEASE WAIT...';
+      try {
+        if (mode === 'login') {
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          if (password.length < 6) throw { code: 'weak' };
+          if (password !== confirmEl.value) throw { code: 'nomatch' };
+          await createUserWithEmailAndPassword(auth, email, password);
+        }
+        window.location.href = 'home.html';
+      } catch (err) {
+        let m = err.message || 'Something went wrong.';
+        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') m = 'Wrong email or password.';
+        else if (err.code === 'auth/invalid-email') m = 'Invalid email.';
+        else if (err.code === 'auth/email-already-in-use') m = 'That email is already registered.';
+        else if (err.code === 'auth/too-many-requests') m = 'Too many attempts. Try later.';
+        else if (err.code === 'weak') m = 'Password must be 6+ characters.';
+        else if (err.code === 'nomatch') m = 'Passwords do not match.';
+        showError(m);
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === 'login' ? 'LOGIN' : 'SIGN UP';
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = 'home.html';
+    });
+  </script>
+</body>
+</html>

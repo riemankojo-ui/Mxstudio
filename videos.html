@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#121212">
+<title>MX Studio · Videos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@900&family=Russo+One&family=Sacramento&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:#000; color:#fff; font-family:-apple-system, Roboto, sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+
+  .header { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#0a0a0a; border-bottom:1px solid #1a1a1a; flex-shrink:0; z-index:10; }
+  .header h1 { font-size:13px; color:#ff3b30; letter-spacing:2px; }
+  .back-btn { background:none; border:none; color:#fff; font-size:12px; padding:6px 10px; cursor:pointer; }
+
+  .video-area { flex:1; display:flex; align-items:center; justify-content:center; background:#000; position:relative; overflow:hidden; min-height:0; }
+  .video-area video { max-width:100%; max-height:100%; display:block; }
+
+  .video-text-layer { position:absolute; left:50%; transform:translateX(-50%); width:90%; padding:4px 8px; text-align:center; pointer-events:none; z-index:5; text-shadow:0 2px 8px #000; white-space:pre-wrap; line-height:1.2; }
+
+  #portraitOverlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:3; }
+
+  .upload-view { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+  .upload-view .icon { font-size:52px; margin-bottom:14px; opacity:0.4; }
+  .upload-view p { color:#666; font-size:13px; margin-bottom:6px; }
+  .upload-view .hint { color:#333; font-size:11px; margin-bottom:24px; }
+  .upload-btn { background:#ff3b30; color:#fff; border:none; padding:14px 28px; border-radius:10px; font-size:14px; font-weight:bold; cursor:pointer; letter-spacing:1px; }
+
+  .active-panel { background:#0a0a0a; border-top:1px solid #1a1a1a; max-height:38vh; overflow-y:auto; display:none; flex-shrink:0; }
+  .active-panel.open { display:block; }
+  .panel-inner { padding:10px 12px; }
+  .panel-title { font-size:10px; color:#666; letter-spacing:2px; margin-bottom:8px; display:flex; justify-content:space-between; }
+  .panel-close { background:none; border:none; color:#666; font-size:14px; cursor:pointer; padding:0 4px; }
+
+  .slider-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .slider-row label { font-size:10px; color:#888; letter-spacing:1px; min-width:70px; }
+  .slider-row input[type=range] { flex:1; accent-color:#ff3b30; height:3px; }
+  .slider-row .val { font-size:10px; color:#ff3b30; min-width:32px; text-align:right; }
+
+  .icon-bar { display:flex; gap:8px; overflow-x:auto; padding:10px 12px; background:#0a0a0a; border-top:1px solid #1a1a1a; flex-shrink:0; scrollbar-width:none; }
+  .icon-bar::-webkit-scrollbar { display:none; }
+
+  .icon-btn { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; color:#888; font-size:9px; cursor:pointer; padding:6px 10px; border-radius:8px; min-width:58px; transition:all 0.15s; }
+  .icon-btn .icon { font-size:22px; }
+  .icon-btn.active { background:#1a1a1a; color:#ff3b30; }
+  .icon-btn:active { transform:scale(0.95); }
+
+  .action-bar { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:10px 12px 14px; background:#0a0a0a; border-top:1px solid #1a1a1a; flex-shrink:0; }
+  .btn { padding:12px; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; border:none; letter-spacing:1px; }
+  .btn.primary { background:#ff3b30; color:#fff; }
+  .btn.success { background:#00aa55; color:#fff; }
+
+  .filters-row { display:flex; gap:6px; overflow-x:auto; padding:2px 0; scrollbar-width:none; }
+  .filters-row::-webkit-scrollbar { display:none; }
+  .filter-btn { flex-shrink:0; background:#1a1a1a; color:#fff; border:1.5px solid #2a2a2a; padding:6px 12px; border-radius:20px; font-size:10px; font-weight:bold; white-space:nowrap; cursor:pointer; }
+  .filter-btn.active { border-color:#ff3b30; background:#2a0a0a; color:#ff3b30; }
+
+  .color-row { display:flex; gap:8px; overflow-x:auto; padding:2px 0; scrollbar-width:none; }
+  .color-row::-webkit-scrollbar { display:none; }
+  .color-circle { flex-shrink:0; width:28px; height:28px; border-radius:50%; border:2px solid #444; cursor:pointer; }
+  .color-circle.active { border-color:#fff; transform:scale(1.1); }
+
+  .font-row { display:flex; gap:6px; overflow-x:auto; padding:2px 0; scrollbar-width:none; }
+  .font-row::-webkit-scrollbar { display:none; }
+  .font-btn { flex-shrink:0; background:#1a1a1a; color:#fff; border:1.5px solid #2a2a2a; padding:8px 14px; border-radius:8px; font-size:14px; white-space:nowrap; cursor:pointer; min-width:60px; text-align:center; }
+  .font-btn.active { border-color:#ff3b30; background:#2a0a0a; }
+
+  .text-layers-list { display:flex; gap:6px; overflow-x:auto; padding:2px 0; margin-bottom:8px; scrollbar-width:none; }
+  .text-layers-list::-webkit-scrollbar { display:none; }
+  .text-layer-item { flex-shrink:0; background:#1a1a1a; border:1.5px solid #2a2a2a; padding:6px 12px; border-radius:20px; font-size:10px; color:#fff; cursor:pointer; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .text-layer-item.active { border-color:#ff3b30; background:#2a0a0a; color:#ff3b30; }
+
+  .text-input { width:100%; padding:10px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:8px; color:#fff; font-size:13px; outline:none; margin-bottom:8px; }
+  .text-input:focus { border-color:#ff3b30; }
+
+  .add-text-btn { background:#00aa55; color:#fff; border:none; padding:10px; width:100%; border-radius:8px; font-size:12px; font-weight:bold; cursor:pointer; margin-top:6px; }
+
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+
+  <div id="homeView" style="display:flex;flex-direction:column;height:100vh;">
+    <div class="header">
+      <h1>MX STUDIO · VIDEO</h1>
+      <button class="back-btn" onclick="window.location.href='home.html'">← Home</button>
+    </div>
+    <div class="upload-view">
+      <div class="icon">🎬</div>
+      <p>No video loaded</p>
+      <p class="hint">Tap below to start</p>
+      <button class="upload-btn" onclick="document.getElementById('videoInput').click()">+ UPLOAD VIDEO</button>
+    </div>
+  </div>
+
+  <div id="editorView" class="hidden" style="display:flex;flex-direction:column;height:100vh;">
+    <div class="header">
+      <h1>MX STUDIO · VIDEO</h1>
+      <button class="back-btn" onclick="goHome()">← Home</button>
+    </div>
+
+    <div class="video-area" id="videoArea">
+      <video id="video" controls playsinline></video>
+    </div>
+
+    <div class="active-panel" id="activePanel">
+      <div class="panel-inner" id="panelInner"></div>
+    </div>
+
+    <div class="icon-bar">
+      <button class="icon-btn" data-panel="adjust" onclick="openPanel('adjust', this)">
+        <span class="icon">⚙️</span><span>Adjust</span>
+      </button>
+      <button class="icon-btn" data-panel="filters" onclick="openPanel('filters', this)">
+        <span class="icon">🎨</span><span>Filters</span>
+      </button>
+      <button class="icon-btn" data-panel="text" onclick="openPanel('text', this)">
+        <span class="icon">✍️</span><span>Text</span>
+      </button>
+      <button class="icon-btn" data-panel="trim" onclick="openPanel('trim', this)">
+        <span class="icon">✂️</span><span>Trim</span>
+      </button>
+      <button class="icon-btn" data-panel="rotate" onclick="openPanel('rotate', this)">
+        <span class="icon">🔄</span><span>Rotate</span>
+      </button>
+      <button class="icon-btn" data-panel="speed" onclick="openPanel('speed', this)">
+        <span class="icon">⚡</span><span>Speed</span>
+      </button>
+      <button class="icon-btn" data-panel="portrait" onclick="openPanel('portrait', this)">
+        <span class="icon">👤</span><span>Portrait</span>
+      </button>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn primary" onclick="playTrimmed()">▶️ PLAY</button>
+      <button class="btn success" onclick="downloadVideo()">💾 SAVE</button>
+    </div>
+  </div>
+
+  <input type="file" id="videoInput" accept="video/*" class="hidden">
+
+  <script>
+    const video = document.getElementById('video');
+    const videoArea = document.getElementById('videoArea');
+    const fileInput = document.getElementById('videoInput');
+    const editorView = document.getElementById('editorView');
+    const homeView = document.getElementById('homeView');
+    const activePanel = document.getElementById('activePanel');
+    const panelInner = document.getElementById('panelInner');
+
+    let videoLoaded = false;
+    let currentFilter = 'none';
+    let duration = 0;
+    let currentPanel = null;
+
+    let textLayers = [];
+    let activeLayerId = null;
+    let nextLayerId = 1;
+
+    let portraitBlur = 0;
+    let portraitFeather = 50;
+
+    const values = { brightness:100, contrast:100, saturation:100, blur:0, trimStart:0, trimEnd:100, rotation:0, speed:1 };
+
+    const fonts = [
+      { name: 'Default', css: '-apple-system, Roboto, sans-serif' },
+      { name: 'Anton', css: 'Anton, sans-serif' },
+      { name: 'Bebas', css: 'Bebas Neue, sans-serif' },
+      { name: 'Oswald', css: 'Oswald, sans-serif' },
+      { name: 'Pacifico', css: 'Pacifico, cursive' },
+      { name: 'Marker', css: 'Permanent Marker, cursive' },
+      { name: 'Playfair', css: 'Playfair Display, serif' },
+      { name: 'Russo', css: 'Russo One, sans-serif' },
+      { name: 'Sacramento', css: 'Sacramento, cursive' },
+      { name: 'Space', css: 'Space Mono, monospace' }
+    ];
+
+    const filters = [
+      { name: 'None', css: 'none' },
+      { name: 'Mono', css: 'grayscale(100%)' },
+      { name: 'Vintage', css: 'sepia(80%) contrast(120%)' },
+      { name: 'Cyber', css: 'hue-rotate(180deg) saturate(150%)' },
+      { name: 'Cool', css: 'hue-rotate(200deg) saturate(120%)' },
+      { name: 'Warm', css: 'sepia(30%) saturate(140%)' },
+      { name: 'B&W Hi', css: 'grayscale(100%) contrast(150%)' },
+      { name: 'Dream', css: 'saturate(80%) brightness(110%)' },
+      { name: 'Invert', css: 'invert(100%)' },
+      { name: 'Neon', css: 'saturate(200%) hue-rotate(90deg)' },
+      { name: 'Sunset', css: 'sepia(50%) saturate(180%) hue-rotate(-20deg)' },
+      { name: 'Cold', css: 'hue-rotate(180deg) saturate(80%) brightness(90%)' },
+      { name: 'Faded', css: 'saturate(50%) contrast(80%) brightness(110%)' }
+    ];
+
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      video.onloadedmetadata = () => {
+        duration = video.duration;
+        videoLoaded = true;
+        homeView.classList.add('hidden');
+        editorView.classList.remove('hidden');
+        values.trimStart = 0;
+        values.trimEnd = duration;
+      };
+    });
+
+    function openPanel(name, btn) {
+      if (currentPanel === name) { closePanel(); return; }
+      document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      currentPanel = name;
+      activePanel.classList.add('open');
+      renderPanel(name);
+    }
+
+    function closePanel() {
+      currentPanel = null;
+      activePanel.classList.remove('open');
+      document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+      panelInner.innerHTML = '';
+    }
+
+    function renderPanel(name) {
+      let html = '';
+
+      if (name === 'adjust') {
+        html = panelHeader('ADJUST');
+        html += sliderRow('Brightness', 'brightness', 0, 200, values.brightness, '%');
+        html += sliderRow('Contrast', 'contrast', 50, 200, values.contrast, '%');
+        html += sliderRow('Saturation', 'saturation', 0, 200, values.saturation, '%');
+        html += sliderRow('Blur', 'blur', 0, 15, values.blur, 'px');
+      }
+      else if (name === 'filters') {
+        html = panelHeader('FILTERS');
+        html += '<div class="filters-row">';
+        filters.forEach(f => {
+          html += '<button class="filter-btn' + (f.css === currentFilter ? ' active' : '') + '" onclick="setFilter(\'' + f.css + '\', this)">' + f.name + '</button>';
+        });
+        html += '</div>';
+      }
+      else if (name === 'text') {
+        html = panelHeader('TEXT');
+        html += '<div class="text-layers-list" id="textLayersList"></div>';
+        html += '<button class="add-text-btn" onclick="addNewTextLayer()">+ ADD TEXT</button>';
+        html += '<div id="textEditorArea" style="margin-top:10px;display:none;">';
+        html += '<input type="text" class="text-input" id="textInput" placeholder="Type here..." oninput="updateActiveTextContent(this.value)">';
+        html += '<div style="font-size:9px;color:#666;letter-spacing:1px;margin-bottom:4px;">COLOR</div>';
+        html += '<div class="color-row">';
+        ['#ffffff','#000000','#ff3b30','#ffcc00','#0084ff','#00ff88','#ff00e0','#ff9500'].forEach(c => {
+          html += '<div class="color-circle" style="background:' + c + ';" onclick="setActiveTextColor(\'' + c + '\', this)"></div>';
+        });
+        html += '</div>';
+        html += '<div style="font-size:9px;color:#666;letter-spacing:1px;margin:8px 0 4px;">FONT</div>';
+        html += '<div class="font-row" id="fontRow">';
+        fonts.forEach((f, i) => {
+          html += '<button class="font-btn' + (i === 0 ? ' active' : '') + '" style="font-family:' + f.css + ';" onclick="setActiveFont(\'' + f.css + '\', this)">' + f.name + '</button>';
+        });
+        html += '</div>';
+        html += '<div style="font-size:9px;color:#666;letter-spacing:1px;margin:8px 0 4px;">SIZE</div>';
+        html += '<div class="slider-row"><label>Size</label><input type="range" min="12" max="80" value="24" oninput="updateActiveTextSize(this.value)"><span class="val" id="sizeVal">24</span></div>';
+        html += '<div style="font-size:9px;color:#666;letter-spacing:1px;margin:8px 0 4px;">VERTICAL POSITION</div>';
+        html += '<div class="slider-row"><label>Y Position</label><input type="range" min="5" max="95" value="50" oninput="updateActiveTextPosY(this.value)"><span class="val" id="posYVal">50</span></div>';
+        html += '</div>';
+      }
+      else if (name === 'trim') {
+        html = panelHeader('TRIM');
+        html += '<div class="slider-row"><label>Start</label><input type="range" min="0" max="' + duration + '" value="' + values.trimStart + '" step="0.1" oninput="setTrim(\'start\', this.value)"><span class="val" id="trimStartVal">' + formatTime(values.trimStart) + '</span></div>';
+        html += '<div class="slider-row"><label>End</label><input type="range" min="0" max="' + duration + '" value="' + values.trimEnd + '" step="0.1" oninput="setTrim(\'end\', this.value)"><span class="val" id="trimEndVal">' + formatTime(values.trimEnd) + '</span></div>';
+      }
+      else if (name === 'rotate') {
+        html = panelHeader('ROTATE');
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+        html += '<button class="filter-btn" onclick="rotateVideo(90)">↻ 90° Right</button>';
+        html += '<button class="filter-btn" onclick="rotateVideo(-90)">↺ 90° Left</button>';
+        html += '<button class="filter-btn" onclick="rotateVideo(180)">↕ 180°</button>';
+        html += '<button class="filter-btn" onclick="resetRotation()">Reset</button>';
+        html += '</div>';
+      }
+      else if (name === 'speed') {
+        html = panelHeader('SPEED');
+        html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+        [0.5, 0.75, 1, 1.5, 2].forEach(s => {
+          html += '<button class="filter-btn' + (s === values.speed ? ' active' : '') + '" onclick="setSpeed(' + s + ', this)">' + s + 'x</button>';
+        });
+        html += '</div>';
+      }
+      else if (name === 'portrait') {
+        html = panelHeader('PORTRAIT BLUR');
+        html += '<div style="font-size:10px;color:#666;margin-bottom:10px;">Blurs the edges for a portrait look</div>';
+        html += '<div class="slider-row"><label>Intensity</label><input type="range" min="0" max="30" value="' + portraitBlur + '" oninput="setPortraitBlur(this.value)"><span class="val" id="portraitVal">' + portraitBlur + '</span></div>';
+        html += '<div class="slider-row"><label>Feather</label><input type="range" min="10" max="90" value="' + portraitFeather + '" oninput="setPortraitFeather(this.value)"><span class="val" id="featherVal">' + portraitFeather + '</span></div>';
+      }
+
+      panelInner.innerHTML = html;
+      if (name === 'text' && textLayers.length > 0) renderTextLayers();
+    }
+
+    function panelHeader(title) {
+      return '<div class="panel-title"><span>' + title + '</span><button class="panel-close" onclick="closePanel()">✕</button></div>';
+    }
+
+    function sliderRow(label, key, min, max, val, unit) {
+      return '<div class="slider-row"><label>' + label + '</label><input type="range" min="' + min + '" max="' + max + '" value="' + val + '" oninput="updateValue(\'' + key + '\', this.value, \'' + unit + '\', this)"><span class="val">' + val + unit + '</span></div>';
+    }
+
+    function updateValue(key, val, unit, el) {
+      values[key] = parseFloat(val);
+      const valSpan = el.nextElementSibling;
+      if (valSpan) valSpan.textContent = val + unit;
+      applyFilters();
+    }
+
+    function setFilter(css, btn) {
+      currentFilter = css;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const arr = [];
+      if (values.brightness !== 100) arr.push('brightness(' + values.brightness + '%)');
+      if (values.contrast !== 100) arr.push('contrast(' + values.contrast + '%)');
+      if (values.saturation !== 100) arr.push('saturate(' + values.saturation + '%)');
+      if (values.blur > 0) arr.push('blur(' + values.blur + 'px)');
+      if (currentFilter !== 'none') arr.push(currentFilter);
+      video.style.filter = arr.join(' ') || 'none';
+    }
+
+    function setTrim(which, val) {
+      values[which === 'start' ? 'trimStart' : 'trimEnd'] = parseFloat(val);
+      const el = document.getElementById(which === 'start' ? 'trimStartVal' : 'trimEndVal');
+      if (el) el.textContent = formatTime(parseFloat(val));
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = (s % 60).toFixed(1);
+      return m + ':' + sec.padStart(4, '0');
+    }
+
+    let currentRotation = 0;
+    function rotateVideo(deg) {
+      currentRotation += deg;
+      video.style.transform = 'rotate(' + currentRotation + 'deg)';
+    }
+    function resetRotation() {
+      currentRotation = 0;
+      video.style.transform = 'none';
+    }
+
+    function setSpeed(s, btn) {
+      values.speed = s;
+      video.playbackRate = s;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function setPortraitBlur(val) {
+      portraitBlur = parseInt(val);
+      const v = document.getElementById('portraitVal');
+      if (v) v.textContent = val;
+      applyPortraitBlur();
+    }
+
+    function setPortraitFeather(val) {
+      portraitFeather = parseInt(val);
+      const v = document.getElementById('featherVal');
+      if (v) v.textContent = val;
+      applyPortraitBlur();
+    }
+
+    function applyPortraitBlur() {
+      const existing = document.getElementById('portraitOverlay');
+      if (existing) existing.remove();
+
+      if (portraitBlur === 0) return;
+
+      const overlay = document.createElement('div');
+      overlay.id = 'portraitOverlay';
+      overlay.style.backdropFilter = 'blur(' + portraitBlur + 'px)';
+      overlay.style.webkitBackdropFilter = 'blur(' + portraitBlur + 'px)';
+      overlay.style.maskImage = 'radial-gradient(ellipse at center, transparent ' + (100 - portraitFeather) + '%, black 100%)';
+      overlay.style.webkitMaskImage = 'radial-gradient(ellipse at center, transparent ' + (100 - portraitFeather) + '%, black 100%)';
+
+      videoArea.appendChild(overlay);
+    }
+
+    function addNewTextLayer() {
+      const layer = { id: nextLayerId++, text: 'New Text', color: '#ffffff', font: fonts[0].css, size: 24, posY: 50 };
+      textLayers.push(layer);
+      activeLayerId = layer.id;
+      renderTextLayers();
+      renderTextOnVideo();
+      const editor = document.getElementById('textEditorArea');
+      if (editor) editor.style.display = 'block';
+      const ti = document.getElementById('textInput');
+      if (ti) ti.value = layer.text;
+    }
+
+    function selectTextLayer(id) {
+      activeLayerId = id;
+      renderTextLayers();
+      const l = textLayers.find(x => x.id === id);
+      if (l) { const ti = document.getElementById('textInput'); if (ti) ti.value = l.text; }
+    }
+
+    function deleteTextLayer(id) {
+      textLayers = textLayers.filter(x => x.id !== id);
+      if (activeLayerId === id) activeLayerId = textLayers[0] ? textLayers[0].id : null;
+      renderTextLayers();
+      renderTextOnVideo();
+    }
+
+    function updateActiveTextContent(val) {
+      const l = textLayers.find(x => x.id === activeLayerId);
+      if (l) { l.text = val; renderTextLayers(); renderTextOnVideo(); }
+    }
+
+    function setActiveTextColor(color, el) {
+      const l = textLayers.find(x => x.id === activeLayerId);
+      if (l) { l.color = color; renderTextOnVideo(); }
+      document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setActiveFont(fontCss, btn) {
+      const l = textLayers.find(x => x.id === activeLayerId);
+      if (l) { l.font = fontCss; renderTextOnVideo(); }
+      document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function updateActiveTextSize(val) {
+      const l = textLayers.find(x => x.id === activeLayerId);
+      if (l) { l.size = parseInt(val); renderTextOnVideo(); }
+      const v = document.getElementById('sizeVal');
+      if (v) v.textContent = val;
+    }
+
+    function updateActiveTextPosY(val) {
+      const l = textLayers.find(x => x.id === activeLayerId);
+      if (l) { l.posY = parseInt(val); renderTextOnVideo(); }
+      const v = document.getElementById('posYVal');
+      if (v) v.textContent = val;
+    }
+
+    function renderTextLayers() {
+      const list = document.getElementById('textLayersList');
+      if (!list) return;
+      list.innerHTML = textLayers.map(l =>
+        '<div class="text-layer-item' + (l.id === activeLayerId ? ' active' : '') + '" onclick="selectTextLayer(' + l.id + ')">' + l.text + '</div>'
+      ).join('');
+    }
+
+    function renderTextOnVideo() {
+      document.querySelectorAll('.video-text-layer').forEach(el => el.remove());
+      textLayers.forEach(l => {
+        const div = document.createElement('div');
+        div.className = 'video-text-layer';
+        div.style.color = l.color;
+        div.style.fontFamily = l.font;
+        div.style.fontSize = l.size + 'px';
+        div.style.top = l.posY + '%';
+        div.style.transform = 'translate(-50%, -50%)';
+        div.textContent = l.text;
+        videoArea.appendChild(div);
+      });
+    }
+
+    function playTrimmed() {
+      if (!videoLoaded) return;
+      video.currentTime = values.trimStart;
+      video.play();
+      const endTime = values.trimEnd;
+      const check = setInterval(() => {
+        if (video.currentTime >= endTime) { video.pause(); clearInterval(check); }
+      }, 100);
+    }
+
+    function downloadVideo() {
+      if (!videoLoaded) { alert('Upload a video first.'); return; }
+      const a = document.createElement('a');
+      a.href = video.src;
+      a.download = 'mx-video-' + Date.now() + '.mp4';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => {
+        alert('✅ Video saved!\n\n💡 For edits with filters/text, use your phone\'s screen recorder while playing.');
+      }, 500);
+    }
+
+    function goHome() {
+      editorView.classList.add('hidden');
+      homeView.classList.remove('hidden');
+      videoLoaded = false;
+      video.src = '';
+      fileInput.value = '';
+      textLayers = [];
+      activeLayerId = null;
+      portraitBlur = 0;
+      portraitFeather = 50;
+      const existing = document.getElementById('portraitOverlay');
+      if (existing) existing.remove();
+      closePanel();
+    }
+  </script>
+</body>
+</html>
